@@ -2,6 +2,7 @@
 library(shiny)
 library(ggplot2)
 library(tidyverse)
+library(DT)
 library(pak)
 pak::pak("diverse-data-hub/diversedata")
 
@@ -9,7 +10,9 @@ pak::pak("diverse-data-hub/diversedata")
 ui <- fluidPage(
 
     # Application title
-    titlePanel("How Couples Meet and Stay Together"),
+    titlePanel("Relationship Duration of Couples across Covid"),
+    
+    p("From the 'hcmst' dataset, this data investigates relationships during the covid epidemic"),
     
     sidebarLayout(
       sidebarPanel(radioButtons("qualityInput", "relationship_quality",
@@ -22,9 +25,9 @@ ui <- fluidPage(
       ),
       
       # Show a plot of the generated distribution
-      mainPanel(plotOutput("Durationplot")
-                #br(), br(),
-                #tableOutput("Meantable")
+      mainPanel(plotOutput("Durationplot"),
+                br(), br(),
+                DT::dataTableOutput("Covidtable")
                 )
       )
     )
@@ -41,7 +44,12 @@ server <- function(input, output) {
     ggplot(hcmstfilt(), aes(relationship_duration))+
       geom_histogram()
   })
+  
+  output$Covidtable <- DT::renderDataTable({
+    hcmstfilt() %>%
+      arrange(subject_age)})
 }
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
