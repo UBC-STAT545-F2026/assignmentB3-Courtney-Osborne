@@ -20,7 +20,7 @@ ui <- fluidPage(
                                 selected = "excellent"),
                    sliderInput("ageInput", "subject_age", min = 20, max = 100,
                                value = c(30, 40)),
-                   downloadButton("download_data", "Download Filtered Data"),
+                   downloadButton("download_data", "Download Table"),
       ),
     
       
