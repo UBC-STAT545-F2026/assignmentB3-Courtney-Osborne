@@ -10,7 +10,7 @@ pak::pak("diverse-data-hub/diversedata")
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Relationship Duration of Couples across Covid"),
+    titlePanel("Relationship Duration of Couples Across Covid"),
     
     p("From the 'hcmst' dataset, this data investigates relationships during the covid epidemic"),
     
@@ -19,16 +19,18 @@ ui <- fluidPage(
                                 choices = c("excellent", "good", "fair", "poor", "very_poor"),
                                 selected = "excellent"),
                    sliderInput("ageInput", "subject_age", min = 20, max = 100,
-                               value = c(30, 40))
-                   
-                
+                               value = c(30, 40)),
+                   downloadButton("download_data", "Download Filtered Data"),
       ),
+    
       
       # Show a plot of the generated distribution
       mainPanel(plotOutput("Durationplot"),
                 br(), br(),
                 DT::dataTableOutput("Covidtable")
                 )
+      
+    
       )
     )
 
@@ -46,8 +48,17 @@ server <- function(input, output) {
   })
   
   output$Covidtable <- DT::renderDataTable({
-    hcmstfilt() %>%
-      arrange(subject_age)})
+    hcmstfilt() %>% 
+      relocate(relationship_duration, rel_change_during_pandemic, agree_covid_approach, subject_vaccinated, partner_vaccinated) %>%
+      arrange(relationship_duration)})
+  
+  output$download_data <- downloadHandler(
+    filename = function() {
+      "hcmst.csv"
+    },
+    content = function(file) {
+      write.csv(hcmstfilt(), file, row.names = FALSE)})
+    
 }
 
 
